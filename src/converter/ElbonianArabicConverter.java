@@ -31,9 +31,24 @@ public class ElbonianArabicConverter {
 
         // TODO check to see if the number is valid, then set it equal to the string
         try{
-            FormArabic(number);
+            int num = Integer.parseInt(number);
+            if((0<=num) && (num<=4998)){
+
+            }
+            else{
+                throw new ValueOutOfBoundsException("Input: "+ number + " is not between the range");
+            }
         }catch (NumberFormatException e){
-            FormElbonian(number);
+            number = number.trim();
+            String Upper = number.toUpperCase();
+            for(Character c: Upper.toCharArray()){
+                if(!(c == 'M' || c == 'C' || c == 'X' || c == 'I' || c == 'L' || c == 'D' || c=='V')){
+                    throw new MalformedNumberException(("Input: "+number+" contains illegal characters"));
+                }
+            }
+            EfirstRule(number);
+            ESecondRule(number);
+            EThirdRule(number);
         }
         this.number = number;
     }
@@ -92,50 +107,27 @@ public class ElbonianArabicConverter {
         }
     }
 
-    private void FormArabic(String s) throws ValueOutOfBoundsException {
-        int num = Integer.parseInt(s);
-        if((0<=num) && (num<=4998)){
-
-        }
-        else{
-            throw new ValueOutOfBoundsException("Input: "+ s + " is not between the range");
-        }
+    private void EfirstRule(String s) throws MalformedNumberException{
+        int M = s.length() - s.replace("M", "").length();
+        int C = s.length() - s.replace("C", "").length();
+        int X = s.length() - s.replace("X", "").length();
+        int I = s.length() - s.replace("I", "").length();
+        if( M>3 || C>3 || X>3 || I>3){ throw new MalformedNumberException("Input: "+s+" breaks rule 1");}
     }
 
-    private void FormElbonian(String s) throws MalformedNumberException {
-        s = s.trim();
-        String Upper = s.toUpperCase();
-        for(Character c: Upper.toCharArray()){
-            if(!(c == 'M') || (c == 'C') || (c == 'X') || (c == 'I') || (c == 'L') || (c == 'D') || (c=='V')){
-                throw new MalformedNumberException(("Input: "+s+" contains illegal characters"));
-            }
-        }
-        EfirstRule(s);
-        ESecondRule(s);
-        EThirdRule(s);
-    }
-
-    private void EfirstRule(String S) throws MalformedNumberException{
-        int M = S.length() - S.replace("M", "").length();
-        int C = S.length() - S.replace("C", "").length();
-        int X = S.length() - S.replace("X", "").length();
-        int I = S.length() - S.replace("I", "").length();
-        if( M>3 || C>3 || X>3 || I>3){ throw new MalformedNumberException("Input: "+S+" breaks rule 1");}
-    }
-
-    private void ESecondRule(String S) throws MalformedNumberException{
-        S = S.toUpperCase();
+    private void ESecondRule(String s) throws MalformedNumberException{
+        s = s.toUpperCase();
         int i = 0;
 
-        while(((i <= S.length() - 1) ? (S.charAt(i) == 'M') : false)){ i++;}
-        while(((i <= S.length() - 1) ? (S.charAt(i) == 'D') : false)){ i++;}
-        while(((i <= S.length() - 1) ? (S.charAt(i) == 'C') : false)){ i++;}
-        while(((i <= S.length() - 1) ? (S.charAt(i) == 'L') : false)){ i++;}
-        while(((i <= S.length() - 1) ? (S.charAt(i) == 'X') : false)){ i++;}
-        while(((i <= S.length() - 1) ? (S.charAt(i) == 'V') : false)){ i++;}
-        while(((i <= S.length() - 1) ? (S.charAt(i) == 'I') : false)){ i++;}
-        if(i != S.length()) {
-            throw new MalformedNumberException("Input: " + S + " breaks rule 2");
+        while(((i <= s.length() - 1) ? (s.charAt(i) == 'M') : false)){ i++;}
+        while(((i <= s.length() - 1) ? (s.charAt(i) == 'D') : false)){ i++;}
+        while(((i <= s.length() - 1) ? (s.charAt(i) == 'C') : false)){ i++;}
+        while(((i <= s.length() - 1) ? (s.charAt(i) == 'L') : false)){ i++;}
+        while(((i <= s.length() - 1) ? (s.charAt(i) == 'X') : false)){ i++;}
+        while(((i <= s.length() - 1) ? (s.charAt(i) == 'V') : false)){ i++;}
+        while(((i <= s.length() - 1) ? (s.charAt(i) == 'I') : false)){ i++;}
+        if(i != s.length()) {
+            throw new MalformedNumberException("Input: " + s + " breaks rule 2");
         }
     }
 
@@ -163,9 +155,9 @@ public class ElbonianArabicConverter {
      */
     public String toElbonian() {
         // TODO Fill in the method's body
-        int valueStored;
+        int val;
         try{
-            valueStored = Integer.parseInt(this.number);
+            val = Integer.parseInt(this.number);
         }
         catch (NumberFormatException e){
             //If we get here, this.number must not be an integer.
@@ -175,62 +167,62 @@ public class ElbonianArabicConverter {
 
         String toReturn = new String();
         int c = 0; //so no more than three of each letter
-        while((c < 3) && (valueStored >= 1000)){
+        while((c < 3) && (val >= 1000)){
             c++; //Like the language!
-            valueStored -= 1000;
+            val -= 1000;
             toReturn += "M";
         }
         c=0;
-        while((c < 3) && (valueStored >= 500)){
+        while((c < 3) && (val >= 500)){
             c++;
-            valueStored -= 500;
+            val -= 500;
             toReturn += "D";
         }
-        while((c < 3) && (valueStored >= 400)){
+        while((c < 3) && (val >= 400)){
             c++;
-            valueStored -= 400;
+            val -= 400;
             toReturn += "dD";
         }
         c=0;
-        while((c < 3) && (valueStored >= 100)){
+        while((c < 3) && (val >= 100)){
             c++;
-            valueStored -= 100;
+            val -= 100;
             toReturn += "C";
         }
         c=0;
-        while((c < 3) && (valueStored >= 50)){
+        while((c < 3) && (val >= 50)){
             c++;
-            valueStored -= 50;
+            val -= 50;
             toReturn += "L";
         }
 
-        while((c < 3) && (valueStored >= 40)){
+        while((c < 3) && (val >= 40)){
             c++;
-            valueStored -= 40;
+            val -= 40;
             toReturn += "lL";
         }
         c=0;
-        while((c < 3) && (valueStored >= 10)){
+        while((c < 3) && (val >= 10)){
             c++;
-            valueStored -= 10;
+            val -= 10;
             toReturn += "X";
         }
         c=0;
-        while((c < 3) && (valueStored >= 5)){
+        while((c < 3) && (val >= 5)){
             c++;
-            valueStored -= 5;
+            val -= 5;
             toReturn += "V";
         }
 
-        while((c < 3) && (valueStored >= 4)){
+        while((c < 3) && (val >= 4)){
             c++;
-            valueStored -= 4;
+            val -= 4;
             toReturn += "vV";
         }
         c=0;
-        while((c < 3) && (valueStored >= 1)){
+        while((c < 3) && (val >= 1)){
             c++;
-            valueStored -= 1;
+            val -= 1;
             toReturn += "I";
         }
 
